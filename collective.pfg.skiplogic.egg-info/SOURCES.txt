@@ -1,0 +1,15 @@
+README.txt
+setup.py
+collective/__init__.py
+collective.pfg.skiplogic.egg-info/PKG-INFO
+collective.pfg.skiplogic.egg-info/SOURCES.txt
+collective.pfg.skiplogic.egg-info/dependency_links.txt
+collective.pfg.skiplogic.egg-info/entry_points.txt
+collective.pfg.skiplogic.egg-info/namespace_packages.txt
+collective.pfg.skiplogic.egg-info/not-zip-safe
+collective.pfg.skiplogic.egg-info/requires.txt
+collective.pfg.skiplogic.egg-info/top_level.txt
+collective/pfg/__init__.py
+collective/pfg/skiplogic/__init__.py
+collective/pfg/skiplogic/extender.py
+collective/pfg/skiplogic/tests.py
