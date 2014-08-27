@@ -1,0 +1,240 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      lang="en"
+      metal:use-macro="context/main_template/macros/master"
+      i18n:domain="plone">
+  <head>
+    <title tal:content="template/title">Skip Logic Generator</title>
+        <meta http-equiv="content-type" content="text/html;charset=utf-8">
+    
+  </head>
+  <body>
+    <metal:main fill-slot="main">
+    <style type="text/css">
+        .includes select {
+            height: 200px;
+        }
+        .remove {
+            float: right;
+            width: 20px;
+            margin: 5px;
+            text-align: center;
+        }
+    </style>
+      <h1 class="documentFirstHeading">Skip Logic Generator</h1>
+      
+      <div class="documentDescription">
+      Use me to generate your Skip Logic JSON object. 
+      </div>
+
+      <div id="content-core" tal:define="fields python: context.portal_catalog(path='/'.join(context.getPhysicalPath())); 
+                                         json python: context.getSkipLogicJSON()">
+       <p tal:content="json"> </p>
+
+
+      <form id="jsonGen">
+        <tal:formsetup repeat="controller python: json.keys()">
+        <fieldset id="controller-0" class="controllers" tal:define="cri repeat/controller/index" tal:attributes="id string:controller-${cri}">
+          <div id="controller-0-field-driver-0" class="driverContainer" tal:attributes="id string: controller-${cri}-field-driver-0">
+            <label for="controller-0-driver-0" tal:attributes="for string:controller-${cri}-driver-0">Choose a driving field</label>
+            <br />
+            <select id="controller-0-driver-0" class="drivers" tal:attributes="id string:controller-${cri}-driver-0">
+                <option value=""></option>
+                <tal:options repeat="field fields">
+                    <option tal:condition="python: context.UID()!=field.UID and field.getId!=controller" tal:attributes="value field/getId">
+                        <tal:label content="string:${field/Title} (${field/getId})"/>
+                    </option>
+                    <option tal:condition="python: context.UID()!=field.UID and field.getId==controller" tal:attributes="value field/getId" selected>
+                        <tal:label content="string:${field/Title} (${field/getId})"/>
+                    </option>
+                </tal:options>
+            </select>
+            <button class="remove" alt="Remove" title="Remove this controller">X</button>
+          </div><!--controller-0-field-driver-0-->
+          <br />
+
+          <tal:controlled repeat="controlled python:json[controller].keys()">
+          <fieldset id="fieldset-controller-0-controlled-0" class="controlled" tal:define="cdi repeat/controlled/index; includes python: json[controller][controlled]">
+          <div id="field-controller-0-controlled-0-value-0" tal:attributes="id string:field-controller-${cri}-controlled-${cdi}-value-0">
+            <label for="controller-0-controlled-0-value-0" tal:attributes="for string:controller-${cri}-controlled-${cdi}-value-0">Value</label>
+            <br />
+            <input type="text" id="controller-0-controlled-0-value-0" class="values" tal:attributes="id string:controller-${cri}-controlled-${cdi}-value-0;
+                                                                                                     value controlled" />
+            <button class="remove" alt="Remove" title="Remove this value">X</button>
+          </div><!--field-controller-0-controlled-0-value-0-->
+
+            <br />
+          <div id="field-controller-0-controlled-0-includes-0" class="includes" tal:attributes="id string:field-controller-${cri}-controlled-${cdi}-includes-0"> 
+            <label for="controller-0-controlled-0-includes-0" tal:attributes="for string:controller-${cri}-controlled-${cdi}-includes-0">Choose all fields to display for the given value</label>
+            <br />
+            <select multiple="multiple" id="controller-0-controlled-0-includes-0" tal:attributes="id string:controller-${cri}-controlled-${cdi}-includes-0">
+                <tal:options repeat="field fields">
+                    <option tal:define="shortname field/getId;
+                                        uid field/UID" 
+                            tal:condition="python: context.UID()!=uid and not context.pyGetSkipLogic(includes, shortname)" 
+                            tal:attributes="value shortname; title field/Title">
+                                <tal:label content="string:${field/Title} (${shortname})"/>
+                    </option>
+                    <option  tal:define="shortname field/getId;
+                                        uid field/UID" 
+                            tal:condition="python: context.UID()!=uid and context.pyGetSkipLogic(includes, shortname)" 
+                            tal:attributes="value shortname; title field/Title" selected>
+                                <tal:label content="string:${field/Title} (${shortname})"/>
+                    </option>
+                </tal:options>
+            </select>
+            <br />
+            <div>
+                <br />
+                <p><label>Required?</label></p>
+                <span id="controller-0-controlled-0-includes-0-checked" tal:repeat="include includes" class="requiredIncludes" tal:attributes="id string:controller-${cri}-controlled-${cdi}-includes-0-checked">
+                    <!--tal:vars define="reqInd repeat/required/index; key python: required.keys()[0]; isRequired python: required[key]"-->
+                    <input type="checkbox" tal:condition="not: include/Required" 
+                           tal:attributes="id string:controller-${cri}-controlled-${cdi}-includes-0-${include/Field}; 
+                           value include/Field;
+                           title include/Title" />
+                    <input type="checkbox" tal:condition="include/Required" 
+                           tal:attributes="id string:controller-${cri}-controlled-${cdi}-includes-0-${include/Field}; 
+                           value include/Field;
+                           title include/Title" checked />
+                    <label tal:attributes="for string:controller-${cri}-controlled-${cdi}-includes-0-${include/Field}" tal:content="string:${include/Title} (${include/Field})"></label>
+                    <!--/tal:vars-->
+                </span>
+            </div>
+          </div><!--field-controller-0-controlled-0-includes-0-->
+            <p></p>
+          </fieldset><!--fieldset-controller-0-controlled-0-->
+          </tal:controlled>
+          <!--input type="number" class="valuesIndex" value="0" /-->
+          <button name="addValue" value="0">Add Value</button>
+        </fieldset><!--controller-0-->         
+        </tal:formsetup>
+        <button name="addController">Add Controller</button>
+        <br />
+        <p></p>
+        <button>Save</button>
+        <textarea id="results"></textarea>
+      </form><!--jsonGen-->
+      </div><!--content-core-->
+      
+
+      <!--script type="text/javascript" tal:content="string:var prologue=${here/getFormPrologue}"></script-->
+      <script type="text/javascript">
+      
+      /**
+        *   After finishing this product, need to get rid of trailing numbers on "value" and "includes"
+        *   if they are no longer being used. Waiting to fix this in case I need to use it later
+        */
+      
+      jQuery.fn.outerHTML = function() {
+        return $('<fieldset>').append( this.eq(0).clone() ).html();
+      };
+      
+      jQuery.fn.displaySelected = function() {
+        //newFields = '<br /><p><label>Required?</label></p>';
+        newFields = '';
+        id = $(this).attr('id');
+        $('#'+id+' option:selected').each(function() {
+            val = $(this).val();
+            txt = $(this).text();
+            label = '<label for="'+id+'-'+val+'">'+txt+'</label>';
+            field = '<input type="checkbox" id="'+id+'-'+val+'" value="'+val+'" />';
+            newFields += field + label + '<br />';
+        });
+        $('#'+id+'-checked').html(newFields);
+      };
+      
+      jQuery(document).ready(function($){
+        var prologue = $('#content-core').data('prologue');
+        var epilogue = $('#content-core').data('epilogue');
+      
+        var valueTemplate = String($('#fieldset-controller-0-controlled-0').outerHTML());
+        var valuesIndex = 0;
+        var controllerTemplate = String($('#controller-0').outerHTML());
+        var controllersIndex = 0;
+        
+        $('form').on('click', 'button[name="addValue"]', function(e){
+            //valuesIndex = $(this).siblings('.valuesIndex').val()++;
+            valuesIndex = parseInt($(this).val())+1;
+            //valuesIndex++;
+            valueTemplate = valueTemplate.replace(/controller-[0-99]/g, $(this).parent('fieldset').attr('id'))
+                                         .replace(/value-[0-99]/g, 'value-'+valuesIndex)
+                                         .replace(/includes-[0-99]/g, 'includes-'+valuesIndex)
+                                         .replace(/controlled-[0-99]/g, 'controlled-'+valuesIndex);
+            $(valueTemplate).insertBefore(this);
+            $(this).val(valuesIndex);
+            e.preventDefault();
+            e.returnValue=false;
+            return false;
+        });
+        
+        $('button[name="addController"]').click(function(e) {
+            controllersIndex++;
+            controllerTemplate = controllerTemplate.replace(/controller-[0-99]/g, 'controller-'+controllersIndex);
+            $(controllerTemplate).insertBefore(this);
+            e.preventDefault();
+            e.returnValue=false;
+            return false;
+        });
+        
+        $('form').on('click', 'button.remove', function(e){
+            $(this).parent().parent('fieldset').remove();
+            e.returnValue=false;
+            e.preventDefault();
+            return false;
+        });
+
+        /*$('select[multiple="multiple"]').each(function(){
+          $(this).displaySelected();
+        });*/
+  
+        $('form').on('change', '.includes select', function() {
+            $(this).displaySelected();
+        });
+        
+        
+        $('#jsonGen').submit(function(e){
+            var formControllers = {};
+            
+            $('#jsonGen fieldset[id^="controller-"]').each(function(index) {
+                var controller = $(this).attr('id');
+                var driver = $('#'+controller+' select.drivers').val();
+                var controlled = {};
+                
+                $('[id^="fieldset-'+controller+'-controlled-"]').each(function(indx) {
+                    var id = $(this).attr('id');
+                    var value = $('#'+id+' input.values').val();
+                    var includes = [];
+                    var selected = $('#'+id+' .includes select').val();
+                    console.log(JSON.stringify(selected));
+                    $.each(selected, function(i, v) {
+                        drilldown = id.replace('fieldset-', '');
+                        d = {};
+                        d['Name'] = $('#'+drilldown+'-includes-'+indx+'-'+v).attr('title');
+                        d['Field'] = v;
+                        d['Required'] = $('#'+drilldown+'-includes-'+indx+'-'+v).is(':checked');
+                        console.log(JSON.stringify(d));
+                        includes.push(d);
+                    }); /* $.each(selected, function()) */
+                    console.log(JSON.stringify(includes));
+                    controlled[value]=includes;
+                }); /* $('[id^="fieldset-'+controller+'-controlled-"]').each()*/
+                console.log(JSON.stringify(controlled));
+                formControllers[driver]=controlled;
+            }); /*$('#jsonGen fieldset[id^="controller-"]').each()*/
+            
+            console.log(JSON.stringify(formControllers));
+            $('#results').val(JSON.stringify(formControllers));
+            return false;
+            e.preventDefault();
+            e.returnValue=false;
+        });     /*$('#jsonGen').submit();*/
+        
+      });
+      
+      </script>
+</metal:main>
+  </body>
+</html>

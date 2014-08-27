@@ -7,6 +7,7 @@ from archetypes.schemaextender.interfaces import ISchemaExtender
 from Products.ATContentTypes.interface import IATDocument
 from Products.PloneFormGen.interfaces.form import IPloneFormGenForm
 
+import json
 
 class SkipLogicBooleanField(ExtensionField, BooleanField):
     """ boolean field to enable/disable skip logic on PFG """
@@ -18,12 +19,26 @@ class PFGExtender(object):
 
 
     fields = [
-        SkipLogicBooleanField("skip_logic",
+        SkipLogicBooleanField("skipLogicEnabled",
             widget = BooleanWidget(
                 label="Skip Logic", 
                 description="Enable Skip Logic on this form?"
                 )
             ),
+    """
+    Storing this here for future reference.         
+        LinesField(
+            name='skipLogic',
+            required=False,
+            widget=atapi.StringWidget(
+                label='SKip Logic',
+                description='create skip logic',
+                visible = {"edit": "invisible", "view": "invisible"},
+            ),
+            searcable=False,
+            schemata='default',
+        ),
+    """
         ]
 
 
@@ -33,3 +48,10 @@ class PFGExtender(object):
     def getFields(self):
         return self.fields
 
+    """ 
+    And this 
+    def getSkipLogicJSON(self):
+        sl = self.getSkipLogic()
+        if len(sl)>0:
+            return json.loads(sl[0])
+    """
